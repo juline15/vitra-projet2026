@@ -2,11 +2,12 @@
 // Mets tes fichiers dans /public, ex. public/visuels/affiche-1.jpg → '/visuels/affiche-1.jpg'
 
 export const event = {
+    heading: 'Le design prend une nouvelle forme',
     title: 'Vitra x Maxime Bellaunay',
     subtitle:
         "Inauguration du nouveau bâtiment du Vitra Design Museum et de l'exposition de Maxime Bellaunay",
     date: 'Juin 2027',
-    logo: '', // ex. '/logo-vitra-bellaunay.svg'
+    logo: '/public/vitraxmaxime.svg',
     teaser: { src: '', poster: '' },
     location: {
         name: 'Vitra Design Museum',

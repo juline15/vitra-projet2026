@@ -5,24 +5,28 @@ import { event } from "../data/event";
 
 <section aria-labelledby="titre">
     <div class="mx-auto max-w-screen-2xl px-5 pt-10 md:px-10 md:pt-16">
-        <h1 id="titre" class="max-w-4xl">
+        <h1
+            id="titre"
+            class="font-display text-3xl font-bold tracking-tight md:text-5xl text-center"
+        >
+            {event.heading}
+        </h1>
+
+        <div class="mx-auto mt-8 flex max-w-4xl justify-center md:mt-10">
             {
                 event.logo ? (
                     <img
                         src={event.logo}
                         alt={event.title}
-                        class="h-auto w-full"
+                        class="h-auto w-150"
                     />
                 ) : (
-                    <span class="flex aspect-[4/1] w-full items-center justify-center border border-dashed border-stone/60 bg-plaster text-sm font-normal text-stone">
-                        <span class="sr-only">{event.title}</span>
-                        <span aria-hidden="true">
-                            Logo « {event.title} », format rectangulaire
-                        </span>
+                    <span class="flex aspect-[4/1] w-full items-center justify-center border border-dashed border-stone/60 bg-plaster text-sm text-stone">
+                        Logo « {event.title} », format rectangulaire
                     </span>
                 )
             }
-        </h1>
+        </div>
 
         <div class="mt-10 grid gap-8 border-t border-ink pt-6 md:grid-cols-12">
             <p
