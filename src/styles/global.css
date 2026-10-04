@@ -1,1 +1,67 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: "Futura";
+    src: url("/fonts/futura-medium.woff2") format("woff2");
+    font-weight: 100 599;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Futura";
+    src: url("/fonts/futura-medium-italic.woff2") format("woff2");
+    font-weight: 100 599;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Futura";
+    src: url("/fonts/futura-bold.woff2") format("woff2");
+    font-weight: 600 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Futura Condensed";
+    src: url("/fonts/futura-condensed-medium.woff2") format("woff2");
+    font-weight: 100 699;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Futura Condensed";
+    src: url("/fonts/futura-condensed-extrabold.woff2") format("woff2");
+    font-weight: 700 900;
+    font-display: swap;
+}
+
+@theme {
+    --font-sans: "Futura", "Century Gothic", sans-serif;
+    --font-display: "Futura", "Century Gothic", sans-serif;
+    --font-condensed: "Futura Condensed", "Futura", sans-serif;
+
+    --color-ink: #000000;
+    --color-paper: #ffffff;
+    --color-plaster: #efede9;
+    --color-concrete: #d6d2cb;
+    --color-stone: #6b6862;
+}
+
+@utility font-wide {
+    font-stretch: 125%;
+}
+
+@layer base {
+    :focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 3px;
+    }
+
+    ::selection {
+        background: var(--color-ink);
+        color: var(--color-paper);
+    }
+}

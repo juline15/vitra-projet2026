@@ -1,0 +1,67 @@
+---
+import Media from "./Media.astro";
+import { visuels } from "../data/event";
+---
+
+<section
+    id="visuels"
+    class="mx-auto max-w-screen-2xl scroll-mt-24 px-5 py-24 md:px-10 md:py-32"
+>
+    <h2 class="font-display text-4xl font-semibold tracking-tight md:text-6xl">
+        Visuels
+    </h2>
+
+    <h3
+        class="mt-16 border-t border-ink pt-4 font-display text-lg font-semibold"
+    >
+        Affiches
+    </h3>
+    <ul
+        class="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 lg:gap-x-8"
+    >
+        {
+            visuels.affiches.map((a) => (
+                <li>
+                    <figure>
+                        <Media
+                            src={a.src}
+                            alt={a.alt}
+                            label={`Affiche (2:3) : ${a.caption}`}
+                            ratio="aspect-[2/3]"
+                        />
+                        <figcaption class="mt-3 text-sm text-stone">
+                            {a.caption}
+                        </figcaption>
+                    </figure>
+                </li>
+            ))
+        }
+    </ul>
+
+    <h3
+        class="mt-24 border-t border-ink pt-4 font-display text-lg font-semibold"
+    >
+        Vidéos
+    </h3>
+    <ul class="mt-8 grid gap-10 md:grid-cols-2 md:gap-8">
+        {
+            visuels.videos.map((v) => (
+                <li>
+                    <figure>
+                        <Media
+                            type="video"
+                            src={v.src}
+                            poster={v.poster}
+                            alt={v.alt}
+                            label={`Vidéo (16:9) : ${v.caption}`}
+                            ratio="aspect-video"
+                        />
+                        <figcaption class="mt-3 text-sm text-stone">
+                            {v.caption}
+                        </figcaption>
+                    </figure>
+                </li>
+            ))
+        }
+    </ul>
+</section>

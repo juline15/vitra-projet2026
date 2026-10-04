@@ -1,0 +1,75 @@
+---
+interface Props {
+    src?: string;
+    alt: string;
+    type?: "image" | "video";
+    ratio?: string;
+    label?: string;
+    poster?: string;
+    autoplay?: boolean;
+    class?: string;
+}
+const {
+    src,
+    alt,
+    type = "image",
+    ratio = "aspect-video",
+    label,
+    poster,
+    autoplay = false,
+    class: cls = "",
+} = Astro.props;
+---
+
+<div class:list={["relative overflow-hidden bg-plaster", ratio, cls]}>
+    {
+        !src ? (
+            <div class="absolute inset-0 flex items-center justify-center border border-dashed border-stone/50 p-4 text-center text-sm text-stone">
+                {label ?? alt}
+            </div>
+        ) : type === "video" ? (
+            autoplay ? (
+                <video
+                    src={src}
+                    poster={poster || undefined}
+                    class="h-full w-full object-cover"
+                    aria-label={alt}
+                    data-autoplay
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                />
+            ) : (
+                <video
+                    src={src}
+                    poster={poster || undefined}
+                    class="h-full w-full object-cover"
+                    aria-label={alt}
+                    controls
+                    playsinline
+                    preload="metadata"
+                />
+            )
+        ) : (
+            <img
+                src={src}
+                alt={alt}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
+            />
+        )
+    }
+</div>
+
+<script>
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document
+            .querySelectorAll<HTMLVideoElement>("video[data-autoplay]")
+            .forEach((v) => {
+                v.pause();
+                v.controls = true;
+            });
+    }
+</script>

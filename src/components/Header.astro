@@ -1,0 +1,40 @@
+---
+const links = [
+    { href: "#concept", label: "Concept" },
+    { href: "#designer", label: "Le designer" },
+    { href: "#visuels", label: "Visuels" },
+    { href: "#deroule", label: "Déroulé" },
+    { href: "#infos", label: "Infos pratiques" },
+];
+---
+
+<header
+    class="sticky top-0 z-50 border-b border-concrete bg-paper/95 backdrop-blur"
+>
+    <div
+        class="mx-auto flex max-w-screen-2xl flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-10"
+    >
+        <a href="#" class="font-display text-lg font-bold tracking-tight"
+            >Vitra Design Museum</a
+        >
+        <nav
+            aria-label="Navigation principale"
+            class="-mx-5 overflow-x-auto px-5 md:mx-0 md:px-0"
+        >
+            <ul class="flex gap-6 text-sm whitespace-nowrap">
+                {
+                    links.map((l) => (
+                        <li>
+                            <a
+                                href={l.href}
+                                class="underline-offset-4 hover:underline"
+                            >
+                                {l.label}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </nav>
+    </div>
+</header>

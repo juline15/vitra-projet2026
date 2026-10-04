@@ -1,0 +1,46 @@
+---
+import { deroule } from "../data/event";
+---
+
+<section id="deroule" class="scroll-mt-24 border-t border-concrete">
+    <div class="mx-auto max-w-screen-2xl px-5 py-24 md:px-10 md:py-32">
+        <h2
+            class="font-display text-4xl font-semibold tracking-tight md:text-6xl"
+        >
+            Déroulé de la soirée
+        </h2>
+
+        {
+            deroule.map((temps) => (
+                <div class="mt-20">
+                    <div class="flex flex-wrap items-baseline justify-between gap-2 pb-4">
+                        <h3 class="font-display text-xl font-semibold">
+                            {temps.title}
+                        </h3>
+                        <p class="text-sm text-stone">{temps.note}</p>
+                    </div>
+                    <ol>
+                        {temps.steps.map((s) => (
+                            <li class="grid gap-2 border-t border-ink py-6 md:grid-cols-12 md:gap-8 md:py-8">
+                                <time
+                                    datetime={s.time}
+                                    class="font-display font-wide text-5xl leading-none font-light tabular-nums md:col-span-5 md:text-8xl"
+                                >
+                                    {s.time}
+                                </time>
+                                <div class="md:col-span-6 md:col-start-7 md:self-end">
+                                    <h4 class="font-display text-xl font-semibold md:text-2xl">
+                                        {s.title}
+                                    </h4>
+                                    <p class="mt-2 max-w-prose leading-relaxed text-stone">
+                                        {s.text}
+                                    </p>
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            ))
+        }
+    </div>
+</section>
