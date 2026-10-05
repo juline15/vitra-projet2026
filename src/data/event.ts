@@ -52,13 +52,13 @@ export const concept = {
 
 export const designer = {
     name: 'Maxime Bellaunay',
-    portrait: '',
+    portrait: '/public/maxime_bellaunay.webp',
     role: "Designer d'objets",
     bio: [
-        'Paragraphe de présentation à rédiger : formation, pratique, matériaux de prédilection, projets marquants.',
-        "Second paragraphe : ce que l'exposition au Vitra Design Museum révèle de son travail.",
+        'Ébéniste et sculpteur, Maxime Bellaunay raconte le paysage à travers son travail. En s’inspirant de celui-ci, il en extrait des matières, des couleurs et des textures, qu’il retranscrit dans ses créations : pièces de mobilier ou œuvres sculpturales.',
+        "Dans une démarche empreinte de spontanéité, la matière influence le dessin de ses objets. En se laissant guider par les irrégularités de la roche, les motifs organiques du bois ou les subtilités du métal, il initie un dialogue instinctif avec ses matériaux, sculptant ainsi des paysages bruts et singuliers.",
     ],
-    quote: "Citation du designer sur sa démarche ou sur l'exposition.",
+    quote: 'Il réalise des pièces uniques et sur-mesure, façonnées au gré de ses voyages, entre la France et le Japon.',
 };
 
 export const visuels = {

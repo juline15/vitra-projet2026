@@ -27,14 +27,11 @@ import { designer } from "../data/event";
                 {designer.bio.map((p) => <p>{p}</p>)}
             </div>
 
-            <div class="mt-auto pt-12 md:pt-16">
+            <div class="mt-auto pt-8 md:pt-12">
                 <blockquote class="border-l-2 border-ink pl-6">
-                    <p class="font-display text-2xl leading-snug md:text-3xl">
-                        « {designer.quote} »
+                    <p class="font-display text-xl leading-snug md:text-2xl">
+                         {designer.quote}
                     </p>
-                    <footer class="mt-4 text-sm text-stone">
-                        {designer.name}
-                    </footer>
                 </blockquote>
             </div>
         </div>
