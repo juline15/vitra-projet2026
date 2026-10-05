@@ -7,8 +7,8 @@ export const event = {
     subtitle:
         "Inauguration du nouveau bâtiment du Vitra Design Museum et de l'exposition de Maxime Bellaunay",
     date: '20 sept. 2028- 17h à 21h',
-    logo: '/public/vitraxmaxime.svg',
-    teaser: { src: '/public/Intro_Vitra_texte_son.mp4', poster: '' },
+    logo: '/vitraxmaxime.svg',
+    teaser: { src: '/Intro_Vitra_texte_son.mp4', poster: '' },
     location: {
         name: 'Vitra Design Museum',
         address: 'Charles-Eames-Strasse 2',
@@ -52,7 +52,7 @@ export const concept = {
 
 export const designer = {
     name: 'Maxime Bellaunay',
-    portrait: '/public/maxime_bellaunay.webp',
+    portrait: '/maxime_bellaunay.webp',
     role: "Designer d'objets",
     bio: [
         'Ébéniste et sculpteur, Maxime Bellaunay raconte le paysage à travers son travail. En s’inspirant de celui-ci, il en extrait des matières, des couleurs et des textures, qu’il retranscrit dans ses créations : pièces de mobilier ou œuvres sculpturales.',
