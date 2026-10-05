@@ -12,7 +12,7 @@ export const event = {
     location: {
         name: 'Vitra',
         address: 'Charles-Eames-Strasse 2',
-        city: 'D–79576 Weil am Rhein',
+        city: 'Weil am Rhein',
         country: 'Allemagne',
         phone: '+49 (0)7621 702 3510',
     },
@@ -29,7 +29,7 @@ export const concept = {
         },
         {
             title: 'Second temps : ouverture au public',
-            text: "L'exposition ouvre ses portes à tous les visiteurs. Texte à compléter : date, horaires, modalités de réservation.",
+            text: "L'exposition ouvre ses portes à tous les visiteurs. L'accès se fera librement, sans réservation, et le pop-up store sera ouvert pour l'occasion.",
         },
     ],
     popup: {
@@ -43,7 +43,7 @@ export const concept = {
             },
             {
                 name: 'Le carnet',
-                text: 'Une couverture texturée et des pages de formats et de matières différents.',
+                text: 'Un carnet en relief : la matière devient un support de création.',
                 image: '/mockup_carnet1.webp',
             },
         ],
@@ -82,7 +82,7 @@ export const deroule = [
     },
     {
         title: 'Ouverture au public',
-        note: 'Sans invitation',
+        note: 'Le lendemain',
         steps: [
             { time: '10:00', title: "Ouverture de l'exposition", text: "Accès au bâtiment, à l'exposition et au pop-up store." },
         ],
