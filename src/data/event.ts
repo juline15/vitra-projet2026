@@ -5,7 +5,7 @@ export const event = {
     heading: 'Le design prend une nouvelle forme',
     title: 'Vitra x Maxime Bellaunay',
     subtitle:
-        "Inauguration du nouveau bâtiment du Vitra et de l'exposition de Maxime Bellaunay",
+        "Soirée d'inauguration du nouveau bâtiment du Vitra et de l'exposition de Maxime Bellaunay",
     date: '20 sept. 2028- 17h à 21h',
     logo: '/vitraxmaxime.svg',
     teaser: { src: '/Intro_Vitra_texte_son.mp4', poster: '' },
@@ -63,8 +63,8 @@ export const designer = {
 
 export const visuels = {
     affiches: [
-        { src: '/affiche_batiment2.webp', alt: 'Affiche évènement', caption: 'Affiche évènement' },
-        { src: '/affiche_batiment3.webp', alt: 'Affiche évènement', caption: 'Affiche évènement' },
+        { src: '/affiche_batiment4.png', alt: 'Affiche évènement', caption: 'Affiche évènement' },
+        { src: '/affiche_batiment2.png', alt: 'Affiche évènement', caption: 'Affiche évènement' },
     ],
 };
 
@@ -104,7 +104,7 @@ export const batiment = {
     mockup: {
         src: 'mockup_batiment.webp',
         alt: 'Mockup du nouveau bâtiment intégré au Vitra Campus',
-        caption: 'Projection du bâtiment (mockup)',
+        caption: 'Projection du bâtiment',
         ratio: 'aspect-[4/3]',
     },
 };
