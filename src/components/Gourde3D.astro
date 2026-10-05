@@ -1,0 +1,189 @@
+---
+// Gourde en 3D (three.js). Glisser pour la faire pivoter.
+interface Props {
+    class?: string;
+}
+const { class: cls = "" } = Astro.props;
+---
+
+<div
+    class:list={[
+        "gourde-3d relative aspect-[4/5] overflow-hidden bg-plaster",
+        cls,
+    ]}
+>
+    <canvas
+        class="block h-full w-full cursor-grab touch-pan-y active:cursor-grabbing"
+        role="img"
+        aria-label="Modèle 3D de la gourde dessinée par Maxime Bellaunay"
+    ></canvas>
+    <p class="pointer-events-none absolute bottom-3 left-3 text-xs text-stone">
+        Faites glisser pour tourner
+    </p>
+</div>
+
+<script>
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const COLOR = 0xe9e2d6; // beige mat de la gourde
+
+    // Décalage horizontal selon la hauteur : donne la silhouette en S, légèrement déhanchée
+    const sway = (y: number) => 0.1 * Math.sin(y * 1.9 - 0.6);
+
+    // Profil de la gourde (rayon, hauteur), de la base au goulot
+    const profile: [number, number][] = [
+        [0, 0],
+        [0.5, 0],
+        [0.62, 0.05],
+        [0.7, 0.2],
+        [0.74, 0.45],
+        [0.72, 0.7],
+        [0.64, 0.95],
+        [0.52, 1.18],
+        [0.45, 1.38],
+        [0.47, 1.55],
+        [0.56, 1.75],
+        [0.62, 1.95],
+        [0.61, 2.15],
+        [0.54, 2.35],
+        [0.42, 2.52],
+        [0.3, 2.64],
+        [0.27, 2.72],
+        [0.27, 2.78],
+    ];
+
+    function buildGourde() {
+        const group = new THREE.Group();
+        const material = new THREE.MeshStandardMaterial({
+            color: COLOR,
+            roughness: 0.85,
+            metalness: 0,
+        });
+
+        // Corps : profil lissé puis tourné autour de l'axe
+        const curve = new THREE.SplineCurve(
+            profile.map(([r, y]) => new THREE.Vector2(r, y)),
+        );
+        const body = new THREE.LatheGeometry(curve.getPoints(80), 96);
+        const pos = body.attributes.position;
+        for (let i = 0; i < pos.count; i++)
+            pos.setX(i, pos.getX(i) + sway(pos.getY(i)));
+        body.computeVertexNormals();
+        const bodyMesh = new THREE.Mesh(body, material);
+        bodyMesh.castShadow = true;
+        group.add(bodyMesh);
+
+        // Bouchon
+        const capTop = 2.78;
+        const cap = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.31, 0.31, 0.3, 64),
+            material,
+        );
+        cap.position.set(sway(capTop + 0.17), capTop + 0.17, 0);
+        cap.castShadow = true;
+        group.add(cap);
+
+        // Fine bague sombre entre le corps et le bouchon
+        const ring = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.285, 0.285, 0.04, 64),
+            new THREE.MeshStandardMaterial({ color: 0x3a3632, roughness: 0.6 }),
+        );
+        ring.position.set(sway(capTop), capTop + 0.01, 0);
+        group.add(ring);
+
+        // Anse : anneau épais sur le côté de l'épaule
+        const handle = new THREE.Mesh(
+            new THREE.TorusGeometry(0.27, 0.13, 32, 64),
+            material,
+        );
+        handle.scale.set(1, 1.3, 1);
+        handle.position.set(0.62 + sway(2.1), 2.1, 0);
+        handle.castShadow = true;
+        group.add(handle);
+
+        group.position.y = -1.5; // centre la gourde
+        return group;
+    }
+
+    function init(container: HTMLElement) {
+        const canvas = container.querySelector("canvas")!;
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: true,
+            alpha: true,
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+        camera.position.set(0, 0.6, 9);
+
+        // Lumière douce, comme une fenêtre sur le côté
+        scene.add(new THREE.HemisphereLight(0xffffff, 0xd8cfc2, 1.6));
+        const sun = new THREE.DirectionalLight(0xfff4e6, 2.2);
+        sun.position.set(-4, 6, 4);
+        sun.castShadow = true;
+        sun.shadow.mapSize.set(1024, 1024);
+        sun.shadow.radius = 6;
+        sun.shadow.camera.left = -5;
+        sun.shadow.camera.right = 5;
+        sun.shadow.camera.top = 5;
+        sun.shadow.camera.bottom = -5;
+        scene.add(sun);
+
+        // Sol invisible qui ne garde que l'ombre portée
+        const ground = new THREE.Mesh(
+            new THREE.PlaneGeometry(10, 10),
+            new THREE.ShadowMaterial({ opacity: 0.12 }),
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -1.5;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        const gourde = buildGourde();
+        scene.add(gourde);
+
+        const controls = new OrbitControls(camera, canvas);
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.enableDamping = true;
+        controls.minPolarAngle = Math.PI / 2.6;
+        controls.maxPolarAngle = Math.PI / 1.9;
+        controls.target.set(0, 0, 0);
+        controls.autoRotate = !reduceMotion;
+        controls.autoRotateSpeed = 1.2;
+
+        // Taille du rendu = taille du cadre
+        const resize = () => {
+            const { clientWidth: w, clientHeight: h } = container;
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        };
+        new ResizeObserver(resize).observe(container);
+        resize();
+
+        // N'anime que lorsque la gourde est visible à l'écran
+        let visible = false;
+        new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+        }).observe(container);
+
+        renderer.setAnimationLoop(() => {
+            if (!visible) return;
+            controls.update();
+            renderer.render(scene, camera);
+        });
+    }
+
+    document.querySelectorAll<HTMLElement>(".gourde-3d").forEach(init);
+</script>
