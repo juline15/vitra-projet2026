@@ -39,12 +39,12 @@ export const concept = {
             {
                 name: 'La gourde',
                 text: 'Une gourde sculpturale : un objet de tous les jours, traité comme une pièce de design.',
-                image: '',
+                image: '/mockup_gourde1.webp',
             },
             {
                 name: 'Le carnet',
                 text: 'Une couverture texturée et des pages de formats et de matières différents.',
-                image: '',
+                image: '/mockup_carnet1.webp',
             },
         ],
     },
