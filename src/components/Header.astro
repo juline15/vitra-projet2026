@@ -13,24 +13,46 @@ const links = [
     class="sticky top-0 z-50 border-b border-concrete bg-paper/95 backdrop-blur"
 >
     <div
-        class="mx-auto flex max-w-screen-2xl flex-col gap-2 px-5 py-3 md:flex-row md:items-center md:justify-between md:gap-3 md:px-10 md:py-4"
+        class="mx-auto flex max-w-screen-2xl items-center justify-between px-5 py-3 md:px-10 md:py-4"
     >
-        <a
-            href="#"
-            class="font-display text-base font-bold tracking-tight md:text-lg"
-            >Vitra Design Museum</a
+        <a href="#" class="inline-block">
+            <img
+                src="/Vitra-Logo.png"
+                alt="Vitra, retour en haut de la page"
+                class="h-7 w-auto md:h-8"
+            />
+        </a>
+
+        <button
+            type="button"
+            id="menu-toggle"
+            class="group relative -mr-2 flex h-10 w-10 items-center justify-center lg:hidden"
+            aria-expanded="false"
+            aria-controls="menu"
+            aria-label="Ouvrir le menu"
         >
+            <span
+                class="absolute h-0.5 w-6 -translate-y-1 bg-ink transition-transform duration-200 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-45 motion-reduce:transition-none"
+            ></span>
+            <span
+                class="absolute h-0.5 w-6 translate-y-1 bg-ink transition-transform duration-200 group-aria-expanded:translate-y-0 group-aria-expanded:-rotate-45 motion-reduce:transition-none"
+            ></span>
+        </button>
+
         <nav
+            id="menu"
             aria-label="Navigation principale"
-            class="-mx-5 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+            class="absolute inset-x-0 top-full hidden border-b border-concrete bg-paper lg:static lg:block lg:border-0 lg:bg-transparent"
         >
-            <ul class="flex gap-5 text-sm whitespace-nowrap md:gap-5 lg:gap-6">
+            <ul
+                class="flex flex-col px-5 pb-4 text-lg md:px-10 lg:flex-row lg:gap-6 lg:p-0 lg:text-sm"
+            >
                 {
                     links.map((l) => (
-                        <li>
+                        <li class="border-t border-concrete first:border-t-0 lg:border-0">
                             <a
                                 href={l.href}
-                                class="inline-block py-1 underline-offset-4 hover:underline"
+                                class="block py-3 underline-offset-4 hover:underline lg:inline-block lg:py-1"
                             >
                                 {l.label}
                             </a>
@@ -44,7 +66,42 @@ const links = [
 
 <script>
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const toggle = document.getElementById("menu-toggle") as HTMLButtonElement;
+    const menu = document.getElementById("menu") as HTMLElement;
 
+    const isOpen = () => toggle.getAttribute("aria-expanded") === "true";
+    const setOpen = (open: boolean) => {
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute(
+            "aria-label",
+            open ? "Fermer le menu" : "Ouvrir le menu",
+        );
+        menu.classList.toggle("hidden", !open);
+    };
+
+    // Ouvrir / fermer au clic sur le bouton
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+
+    // Fermer avec Échap
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isOpen()) {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+
+    // Fermer en cliquant en dehors du header
+    document.addEventListener("click", (e) => {
+        if (isOpen() && !(e.target as HTMLElement).closest("header"))
+            setOpen(false);
+    });
+
+    // Refermer si on agrandit la fenêtre au format ordinateur
+    window.matchMedia("(min-width: 1024px)").addEventListener("change", (e) => {
+        if (e.matches) setOpen(false);
+    });
+
+    // Défilement animé vers les sections + fermeture du menu
     document
         .querySelectorAll<HTMLAnchorElement>('header a[href^="#"]')
         .forEach((link) => {
@@ -54,6 +111,7 @@ const links = [
                 if (!target) return;
 
                 e.preventDefault();
+                setOpen(false);
                 target.scrollIntoView({
                     behavior: reduceMotion.matches ? "auto" : "smooth",
                 });

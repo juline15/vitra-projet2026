@@ -5,12 +5,12 @@ export const event = {
     heading: 'Le design prend une nouvelle forme',
     title: 'Vitra x Maxime Bellaunay',
     subtitle:
-        "Inauguration du nouveau bâtiment du Vitra Design Museum et de l'exposition de Maxime Bellaunay",
+        "Inauguration du nouveau bâtiment du Vitra et de l'exposition de Maxime Bellaunay",
     date: '20 sept. 2028- 17h à 21h',
     logo: '/vitraxmaxime.svg',
     teaser: { src: '/Intro_Vitra_texte_son.mp4', poster: '' },
     location: {
-        name: 'Vitra Design Museum',
+        name: 'Vitra',
         address: 'Charles-Eames-Strasse 2',
         city: 'D–79576 Weil am Rhein',
         country: 'Allemagne',
@@ -21,7 +21,7 @@ export const event = {
 export const concept = {
     lead: "Repartir de l'exposition avec un fragment de son univers.",
     intro:
-        "Le Vitra Design Museum inaugure son nouveau bâtiment et dévoile une exposition conçue autour du travail de Maxime Bellaunay. La soirée se déroule en deux temps et se prolonge bien après la visite, grâce à des objets imaginés pour l'occasion.",
+        "Le Vitra inaugure son nouveau bâtiment et dévoile une exposition conçue autour du travail de Maxime Bellaunay. La soirée se déroule en deux temps et se prolonge bien après la visite, grâce à des objets imaginés pour l'occasion.",
     temps: [
         {
             title: 'Premier temps : avant-première privée',
