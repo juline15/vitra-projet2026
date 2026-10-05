@@ -35,10 +35,9 @@ const {
                     class="h-full w-full object-cover"
                     aria-label={alt}
                     data-autoplay
-                    autoplay
                     muted
-                    loop
                     playsinline
+                    preload="auto"
                 />
             ) : (
                 <video
@@ -64,12 +63,44 @@ const {
 </div>
 
 <script>
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        document
-            .querySelectorAll<HTMLVideoElement>("video[data-autoplay]")
-            .forEach((v) => {
-                v.pause();
-                v.controls = true;
-            });
+    const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const videos = document.querySelectorAll<HTMLVideoElement>(
+        "video[data-autoplay]",
+    );
+
+    const showControls = (v: HTMLVideoElement) => {
+        v.controls = true;
+    };
+
+    if (reduceMotion) {
+        videos.forEach(showControls);
+    } else {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(({ target, isIntersecting }) => {
+                    const v = target as HTMLVideoElement;
+                    if (isIntersecting) {
+                        v.play().catch(() => showControls(v));
+                    } else {
+                        v.pause();
+                    }
+                });
+            },
+            { threshold: 0.6 },
+        );
+
+        videos.forEach((v) => {
+            observer.observe(v);
+            v.addEventListener(
+                "ended",
+                () => {
+                    observer.unobserve(v);
+                    showControls(v);
+                },
+                { once: true },
+            );
+        });
     }
 </script>

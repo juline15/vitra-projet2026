@@ -6,9 +6,9 @@ export const event = {
     title: 'Vitra x Maxime Bellaunay',
     subtitle:
         "Inauguration du nouveau bâtiment du Vitra Design Museum et de l'exposition de Maxime Bellaunay",
-    date: 'Juin 2027',
+    date: '20 sept. 2028- 17h à 21h',
     logo: '/public/vitraxmaxime.svg',
-    teaser: { src: '', poster: '' },
+    teaser: { src: '/public/Intro_Vitra_texte_son.mp4', poster: '' },
     location: {
         name: 'Vitra Design Museum',
         address: 'Charles-Eames-Strasse 2',
