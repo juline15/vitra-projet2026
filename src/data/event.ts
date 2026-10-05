@@ -63,9 +63,8 @@ export const designer = {
 
 export const visuels = {
     affiches: [
-        { src: '', alt: 'Affiche principale', caption: 'Affiche principale' },
-        { src: '', alt: 'Affiche avant-première', caption: 'Avant-première' },
-        { src: '', alt: 'Affiche pop-up store', caption: 'Pop-up store' },
+        { src: '/affiche_batiment2.webp', alt: 'Affiche évènement', caption: 'Affiche évènement' },
+        { src: '/affiche_batiment3.webp', alt: 'Affiche évènement', caption: 'Affiche évènement' },
     ],
     videos: [
         { src: '', poster: '', alt: 'Vidéo annonce', caption: 'Annonce' },
@@ -87,7 +86,7 @@ export const deroule = [
     },
     {
         title: 'Ouverture au public',
-        note: 'Date à confirmer',
+        note: 'Sans invitation',
         steps: [
             { time: '10:00', title: "Ouverture de l'exposition", text: "Accès au bâtiment, à l'exposition et au pop-up store." },
         ],

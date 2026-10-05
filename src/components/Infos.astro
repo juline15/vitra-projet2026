@@ -32,26 +32,31 @@ const tel = location.phone.replace("(0)", "").replace(/[^+\d]/g, "");
             <div>
                 <dt class="text-sm text-paper/60">Accès</dt>
                 <dd class="mt-2 text-lg">
-                    Avant-première sur invitation.<br />Ouverture au public : à
-                    confirmer.
+                    Avant-première sur invitation.<br />Ouverture au public différée.
                 </dd>
             </div>
             <div>
                 <dt class="text-sm text-paper/60">Contact</dt>
-                <dd class="mt-2 text-lg">
-                    <a
-                        href={`tel:${tel}`}
-                        class="underline-offset-4 hover:underline"
-                        >{location.phone}</a>
-                </dd>
+                <dd class="mt-2 text-lg">{location.phone}</dd>
             </div>
         </dl>
 
         <div
-            class="mt-24 flex flex-col gap-4 border-t border-paper/30 pt-6 text-sm text-paper/60 md:flex-row md:justify-between"
+            class="mt-24 grid gap-4 border-t border-paper/30 pt-6 text-sm text-paper/60 md:grid-cols-3"
         >
             <p>{event.title}</p>
-            <p>Projet étudiant, non affilié à Vitra.</p>
+            <p class="md:text-center">
+                Création {" "}
+                <a
+                    href="https://www.instagram.com/juline_crea/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-paper underline-offset-4 hover:underline"
+                >
+                    @juline_crea
+                </a>
+            </p>
+            <p class="md:text-right">Projet étudiant, non affilié à Vitra.</p>
         </div>
     </div>
 </footer>
