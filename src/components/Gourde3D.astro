@@ -25,6 +25,7 @@ const { class: cls = "" } = Astro.props;
 <script>
     import * as THREE from "three";
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { DecalGeometry } from "three/addons/geometries/DecalGeometry.js";
 
     const COLOR = 0xe9e2d6; // beige mat de la gourde
 
@@ -53,6 +54,52 @@ const { class: cls = "" } = Astro.props;
         [0.27, 2.78],
     ];
 
+    // Logo « vitra. » dessiné dans une texture transparente
+    function buildLogoTexture() {
+        const c = document.createElement("canvas");
+        c.width = 512;
+        c.height = 160;
+        const ctx = c.getContext("2d")!;
+        ctx.fillStyle = "#8a857d";
+        ctx.font = "500 96px Futura, 'Century Gothic', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("vitra.", 256, 84);
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 8;
+        return tex;
+    }
+
+    // Colle le logo sur la face avant, comme un marquage
+    function addLogo(group: THREE.Group, bodyMesh: THREE.Mesh) {
+        const LOGO_Y = 0.32; // hauteur du logo sur la gourde
+        bodyMesh.updateMatrixWorld();
+        const hit = new THREE.Raycaster(
+            new THREE.Vector3(0, LOGO_Y, 5),
+            new THREE.Vector3(0, 0, -1),
+        ).intersectObject(bodyMesh)[0];
+        if (!hit) return;
+
+        const decal = new THREE.Mesh(
+            new DecalGeometry(
+                bodyMesh,
+                hit.point,
+                new THREE.Euler(0, 0, 0),
+                new THREE.Vector3(0.42, 0.13, 0.5),
+            ),
+            new THREE.MeshStandardMaterial({
+                map: buildLogoTexture(),
+                transparent: true,
+                roughness: 0.85,
+                depthWrite: false,
+                polygonOffset: true,
+                polygonOffsetFactor: -4,
+            }),
+        );
+        group.add(decal);
+    }
+
     function buildGourde() {
         const group = new THREE.Group();
         const material = new THREE.MeshStandardMaterial({
@@ -65,7 +112,7 @@ const { class: cls = "" } = Astro.props;
         const curve = new THREE.SplineCurve(
             profile.map(([r, y]) => new THREE.Vector2(r, y)),
         );
-        const body = new THREE.LatheGeometry(curve.getPoints(80), 96);
+        const body = new THREE.LatheGeometry(curve.getPoints(80), 96, Math.PI);
         const pos = body.attributes.position;
         for (let i = 0; i < pos.count; i++)
             pos.setX(i, pos.getX(i) + sway(pos.getY(i)));
@@ -73,6 +120,7 @@ const { class: cls = "" } = Astro.props;
         const bodyMesh = new THREE.Mesh(body, material);
         bodyMesh.castShadow = true;
         group.add(bodyMesh);
+        addLogo(group, bodyMesh);
 
         // Bouchon
         const capTop = 2.78;
@@ -185,5 +233,8 @@ const { class: cls = "" } = Astro.props;
         });
     }
 
-    document.querySelectorAll<HTMLElement>(".gourde-3d").forEach(init);
+    // Attend la police pour que le logo soit dessiné en Futura
+    document.fonts.ready.then(() => {
+        document.querySelectorAll<HTMLElement>(".gourde-3d").forEach(init);
+    });
 </script>
