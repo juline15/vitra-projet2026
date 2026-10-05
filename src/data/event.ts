@@ -92,3 +92,23 @@ export const deroule = [
         ],
     },
 ];
+
+export const batiment = {
+    title: 'Le bâtiment',
+    lead: 'Un bâtiment qui se lit comme un paysage : deux sommets, une faille de lumière.',
+    text: [
+        "Le nouveau bâtiment s'étire au ras du sol, puis s'élève en une courbe continue jusqu'à deux sommets, séparés par une faille vitrée qui fait entrer la lumière au cœur de l'exposition. Ses surfaces blanches et sans arête prolongent les architectures du Vitra Campus, des courbes de Frank Gehry à l'élan de la caserne de pompiers de Zaha Hadid : un objet de design que l'on parcourt avant même d'en franchir le seuil.",
+    ],
+    dessin: {
+        src: '/dessin_batiment1.svg',
+        alt: 'Dessin du nouveau bâtiment du Vitra Design Museum',
+        caption: 'Dessin du bâtiment',
+        ratio: 'aspect-[4/3]',
+    },
+    mockup: {
+        src: 'mockup_batiment.webp',
+        alt: 'Mockup du nouveau bâtiment intégré au Vitra Campus',
+        caption: 'Projection du bâtiment (mockup)',
+        ratio: 'aspect-[4/3]',
+    },
+};
