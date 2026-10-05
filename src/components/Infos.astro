@@ -1,27 +1,26 @@
 ---
 import { event } from "../data/event";
 const { location } = event;
-const tel = location.phone.replace("(0)", "").replace(/[^+\d]/g, "");
 ---
 
 <footer id="infos" class="scroll-mt-24 bg-ink text-paper">
-    <div class="mx-auto max-w-screen-2xl px-5 py-24 md:px-10 md:py-32">
+    <div class="mx-auto max-w-screen-2xl px-5 py-16 md:px-10 md:py-24 lg:py-32">
         <h2
-            class="font-display text-4xl font-semibold tracking-tight md:text-6xl"
+            class="font-display text-3xl font-semibold tracking-tight md:text-5xl lg:text-6xl"
         >
             Infos pratiques
         </h2>
 
         <dl
-            class="mt-16 grid gap-10 border-t border-paper/30 pt-8 sm:grid-cols-2 lg:grid-cols-4"
+            class="mt-10 grid gap-8 border-t border-paper/30 pt-6 sm:grid-cols-2 md:mt-16 md:gap-10 md:pt-8 lg:grid-cols-4"
         >
             <div>
                 <dt class="text-sm text-paper/60">Date</dt>
-                <dd class="mt-2 text-lg">{event.date}</dd>
+                <dd class="mt-1 text-base md:mt-2 md:text-lg">{event.date}</dd>
             </div>
             <div>
                 <dt class="text-sm text-paper/60">Adresse</dt>
-                <dd class="mt-2 text-lg">
+                <dd class="mt-1 text-base md:mt-2 md:text-lg">
                     <address class="not-italic">
                         {location.name}<br />{location.address}<br />{
                             location.city
@@ -31,22 +30,25 @@ const tel = location.phone.replace("(0)", "").replace(/[^+\d]/g, "");
             </div>
             <div>
                 <dt class="text-sm text-paper/60">Accès</dt>
-                <dd class="mt-2 text-lg">
-                    Avant-première sur invitation.<br />Ouverture au public différée.
+                <dd class="mt-1 text-base md:mt-2 md:text-lg">
+                    Avant-première sur invitation.<br />Ouverture au public
+                    différée.
                 </dd>
             </div>
             <div>
                 <dt class="text-sm text-paper/60">Contact</dt>
-                <dd class="mt-2 text-lg">{location.phone}</dd>
+                <dd class="mt-1 text-base md:mt-2 md:text-lg">
+                    {location.phone}
+                </dd>
             </div>
         </dl>
 
         <div
-            class="mt-24 grid gap-4 border-t border-paper/30 pt-6 text-sm text-paper/60 md:grid-cols-3"
+            class="mt-16 grid gap-2 border-t border-paper/30 pt-6 text-sm text-paper/60 md:mt-24 md:gap-4 lg:grid-cols-3"
         >
             <p>{event.title}</p>
-            <p class="md:text-center">
-                Création {" "}
+            <p class="lg:text-center">
+                Création{" "}
                 <a
                     href="https://www.instagram.com/juline_crea/"
                     target="_blank"
@@ -56,7 +58,7 @@ const tel = location.phone.replace("(0)", "").replace(/[^+\d]/g, "");
                     @juline_crea
                 </a>
             </p>
-            <p class="md:text-right">Projet étudiant, non affilié à Vitra.</p>
+            <p class="lg:text-right">Projet étudiant, non affilié à Vitra.</p>
         </div>
     </div>
 </footer>

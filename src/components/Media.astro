@@ -24,7 +24,7 @@ const {
 <div class:list={["relative overflow-hidden bg-plaster", ratio, cls]}>
     {
         !src ? (
-            <div class="absolute inset-0 flex items-center justify-center border border-dashed border-stone/50 p-4 text-center text-sm text-stone">
+            <div class="absolute inset-0 flex items-center justify-center border border-dashed border-stone/50 p-2 text-center text-xs text-stone sm:p-4 sm:text-sm">
                 {label ?? alt}
             </div>
         ) : type === "video" ? (
