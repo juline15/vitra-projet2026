@@ -1,5 +1,5 @@
 ---
-// Carnet en 3D (three.js). Glisser pour le faire pivoter.
+// Carnet en 3D (three.js). Glisser pour le faire pivoter, cliquer pour l'ouvrir.
 interface Props {
     class?: string;
 }
@@ -15,9 +15,38 @@ const { class: cls = "" } = Astro.props;
     <canvas
         class="block h-full w-full cursor-grab touch-pan-y active:cursor-grabbing"
         role="img"
-        aria-label="Modèle 3D du carnet dessiné par Maxime Bellaunay"></canvas>
-    <p class="pointer-events-none absolute bottom-3 left-3 text-xs text-stone">
-        Faites glisser pour tourner
+        aria-label="Modèle 3D du carnet dessiné par Maxime Bellaunay. Une fois ouvert, il dévoile des feuillets de formats et de matières différents : papiers quadrillés, papier froissé nacré, papier artisanal aux bords déchirés et carte lisse."
+    ></canvas>
+
+    <button
+        type="button"
+        class="carnet-toggle absolute top-3 right-3 border border-ink bg-paper/90 px-3 py-1.5 text-xs transition-colors hover:bg-ink hover:text-paper"
+        aria-pressed="false"
+    >
+        Ouvrir le carnet
+    </button>
+
+    <div class="carnet-pages absolute right-3 bottom-3 flex gap-2" hidden>
+        <button
+            type="button"
+            class="carnet-prev border border-ink bg-paper/90 px-3 py-1.5 text-xs transition-colors hover:bg-ink hover:text-paper disabled:pointer-events-none disabled:opacity-30"
+            aria-label="Page précédente"
+        >
+            ←
+        </button>
+        <button
+            type="button"
+            class="carnet-next border border-ink bg-paper/90 px-3 py-1.5 text-xs transition-colors hover:bg-ink hover:text-paper disabled:pointer-events-none disabled:opacity-30"
+            aria-label="Page suivante"
+        >
+            →
+        </button>
+    </div>
+
+    <p
+        class="carnet-hint pointer-events-none absolute bottom-3 left-3 text-xs text-stone"
+    >
+        Glissez pour tourner, cliquez pour ouvrir
     </p>
 </div>
 
@@ -26,8 +55,19 @@ const { class: cls = "" } = Astro.props;
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     import { buildCarnet } from "../lib/objets3d";
 
+    const easeInOut = (t: number) =>
+        t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
+
     function init(container: HTMLElement) {
         const canvas = container.querySelector("canvas")!;
+        const button =
+            container.querySelector<HTMLButtonElement>(".carnet-toggle")!;
+        const hint = container.querySelector<HTMLElement>(".carnet-hint")!;
+        const pageNav = container.querySelector<HTMLElement>(".carnet-pages")!;
+        const prevBtn =
+            container.querySelector<HTMLButtonElement>(".carnet-prev")!;
+        const nextBtn =
+            container.querySelector<HTMLButtonElement>(".carnet-next")!;
         const reduceMotion = window.matchMedia(
             "(prefers-reduced-motion: reduce)",
         ).matches;
@@ -39,7 +79,7 @@ const { class: cls = "" } = Astro.props;
         });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
 
         const scene = new THREE.Scene();
@@ -51,8 +91,10 @@ const { class: cls = "" } = Astro.props;
         const sun = new THREE.DirectionalLight(0xfff4e6, 2.6);
         sun.position.set(-4, 5, 5);
         sun.castShadow = true;
-        sun.shadow.mapSize.set(1024, 1024);
-        sun.shadow.radius = 6;
+        sun.shadow.mapSize.set(2048, 2048);
+        sun.shadow.radius = 4;
+        sun.shadow.bias = -0.0004;
+        sun.shadow.normalBias = 0.01;
         sun.shadow.camera.left = -5;
         sun.shadow.camera.right = 5;
         sun.shadow.camera.top = 5;
@@ -61,7 +103,7 @@ const { class: cls = "" } = Astro.props;
 
         // Sol invisible qui ne garde que l'ombre portée
         const ground = new THREE.Mesh(
-            new THREE.PlaneGeometry(12, 12),
+            new THREE.PlaneGeometry(14, 14),
             new THREE.ShadowMaterial({ opacity: 0.12 }),
         );
         ground.rotation.x = -Math.PI / 2;
@@ -71,6 +113,12 @@ const { class: cls = "" } = Astro.props;
 
         const carnet = buildCarnet();
         scene.add(carnet);
+        const setOpen = carnet.userData.setOpen as (e: number) => void;
+        const setPage = carnet.userData.setPage as (
+            k: number,
+            e: number,
+        ) => void;
+        const pageCount = carnet.userData.pageCount as number;
 
         const controls = new OrbitControls(camera, canvas);
         controls.enableZoom = false;
@@ -80,6 +128,13 @@ const { class: cls = "" } = Astro.props;
         controls.maxPolarAngle = Math.PI / 1.9;
         controls.autoRotate = !reduceMotion;
         controls.autoRotateSpeed = 1.2;
+
+        // Distance de caméra pour que le carnet ouvert (deux fois plus large) tienne dans le cadre
+        const openDistance = () => {
+            const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+            const halfW = 2.12; // demi-largeur du carnet ouvert, avec une marge
+            return Math.max(7.5, halfW / (Math.tan(halfFov) * camera.aspect));
+        };
 
         // Taille du rendu = taille du cadre
         const resize = () => {
@@ -91,20 +146,120 @@ const { class: cls = "" } = Astro.props;
         new ResizeObserver(resize).observe(container);
         resize();
 
+        // --- Ouverture / fermeture ---
+        let open = false;
+        let progress = 0; // 0 = fermé, 1 = ouvert
+
+        // Pages tournées : nombre de feuillets passés à gauche, et avancement de chacun
+        let turned = 0;
+        const pageProgress = new Array(pageCount).fill(0);
+        const updatePageButtons = () => {
+            prevBtn.disabled = turned === 0;
+            nextBtn.disabled = turned === pageCount;
+        };
+        const turnPage = (dir: 1 | -1) => {
+            turned = Math.min(pageCount, Math.max(0, turned + dir));
+            updatePageButtons();
+            if (reduceMotion)
+                pageProgress.forEach(
+                    (_, k) => (pageProgress[k] = k < turned ? 1 : 0),
+                );
+        };
+        let cameraFrom = camera.position.clone();
+        let cameraTo = camera.position.clone();
+        let cameraT = 1;
+
+        const toggle = () => {
+            open = !open;
+            button.textContent = open
+                ? "Refermer le carnet"
+                : "Ouvrir le carnet";
+            button.setAttribute("aria-pressed", String(open));
+            hint.textContent = open
+                ? "Cliquez à droite ou à gauche pour tourner les pages"
+                : "Glissez pour tourner, cliquez pour ouvrir";
+            pageNav.hidden = !open;
+            if (!open) turned = 0; // les pages se remettent en place avant de refermer
+            updatePageButtons();
+
+            // Ouvert : vue de face, fixe. Fermé : on rend la main à l'utilisateur.
+            controls.enabled = !open;
+            canvas.style.cursor = open ? "pointer" : "";
+            controls.autoRotate = !open && !reduceMotion;
+            cameraFrom = camera.position.clone();
+            cameraTo = open
+                ? new THREE.Vector3(0, 2.4, openDistance())
+                : new THREE.Vector3(0, 0.4, 7.5);
+            cameraT = reduceMotion ? 1 : 0;
+            if (reduceMotion) progress = open ? 1 : 0;
+        };
+
+        button.addEventListener("click", toggle);
+        prevBtn.addEventListener("click", () => turnPage(-1));
+        nextBtn.addEventListener("click", () => turnPage(1));
+
+        // Clic sur le carnet : fermé, il s'ouvre ; ouvert, il tourne les pages
+        // (moitié droite = page suivante, moitié gauche = page précédente)
+        let down = { x: 0, y: 0 };
+        canvas.addEventListener(
+            "pointerdown",
+            (e) => (down = { x: e.clientX, y: e.clientY }),
+        );
+        canvas.addEventListener("click", (e) => {
+            if (Math.hypot(e.clientX - down.x, e.clientY - down.y) >= 6) return; // c'était un glissement
+            if (!open) return toggle();
+            const rect = canvas.getBoundingClientRect();
+            turnPage(e.clientX - rect.left > rect.width / 2 ? 1 : -1);
+        });
+
         // N'anime que lorsque le carnet est visible à l'écran
         let visible = false;
         new IntersectionObserver(([entry]) => {
             visible = entry.isIntersecting;
         }).observe(container);
 
-        renderer.setAnimationLoop(() => {
+        let last = performance.now();
+        renderer.setAnimationLoop((now: number) => {
+            const dt = Math.min((now - last) / 1000, 0.05);
+            last = now;
             if (!visible) return;
-            controls.update();
+
+            // Pages : environ 0,7 s par page
+            pageProgress.forEach((p, k) => {
+                const target = k < turned ? 1 : 0;
+                const step = dt / 0.7;
+                pageProgress[k] = target
+                    ? Math.min(1, p + step)
+                    : Math.max(0, p - step);
+                setPage(k, easeInOut(pageProgress[k]));
+            });
+
+            // Couverture : environ 1,2 s pour s'ouvrir.
+            // À la fermeture, elle attend que toutes les pages soient revenues à droite.
+            const pagesBack = pageProgress.every((p) => p < 0.02);
+            const step = dt / 1.2;
+            if (open) progress = Math.min(1, progress + step);
+            else if (pagesBack) progress = Math.max(0, progress - step);
+            setOpen(easeInOut(progress));
+
+            // Caméra : glisse vers la vue de face, puis on rend la main
+            if (cameraT < 1) {
+                cameraT = Math.min(1, cameraT + dt / 1.2);
+                camera.position.lerpVectors(
+                    cameraFrom,
+                    cameraTo,
+                    easeInOut(cameraT),
+                );
+                camera.lookAt(controls.target);
+            } else if (!open) {
+                controls.update();
+            }
+
             renderer.render(scene, camera);
         });
     }
 
-    // Attend la police pour que le logo « vitra. » soit dessiné en Futura
+    // Attend la police pour que les logos soient dessinés en Futura
     document.fonts.ready.then(() => {
         document.querySelectorAll<HTMLElement>(".carnet-3d").forEach(init);
     });

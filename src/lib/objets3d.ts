@@ -262,11 +262,251 @@ function buildPaperEdge() {
     return tex;
 }
 
-export function buildCarnet() {
-    const group = new THREE.Group();
-    const half = (PAGES + COVER) / 2;
+/* ----- Intérieur du carnet : feuillets de formats et de matières différents ----- */
 
-    // Couverture avant (texturée sur la face visible uniquement)
+const GAP = 0.045; // espace réservé aux feuillets entre les pages et la couverture
+
+function canvasTexture(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => void) {
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    draw(c.getContext("2d")!);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 8;
+    return tex;
+}
+
+// Grain de papier recyclé
+function speckle(ctx: CanvasRenderingContext2D, w: number, h: number, n: number, color: string) {
+    ctx.fillStyle = color;
+    for (let i = 0; i < n; i++) ctx.fillRect(rand() * w, rand() * h, 1.5, 1.5);
+}
+
+// Papier quadrillé
+const gridPaper = (bg: string, step: number) =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.strokeStyle = "rgba(150,145,135,0.35)";
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= 512; x += step) {
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, 0);
+            ctx.lineTo(x + 0.5, 512);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, x + 0.5);
+            ctx.lineTo(512, x + 0.5);
+            ctx.stroke();
+        }
+    });
+
+// Papier froissé nacré : couleur + relief
+function crinkledPaper() {
+    const draw = (bump: boolean) => (ctx: CanvasRenderingContext2D) => {
+        ctx.fillStyle = bump ? "#808080" : "#d8d1c2";
+        ctx.fillRect(0, 0, 512, 512);
+        seed = 21;
+        for (let i = 0; i < 70; i++) {
+            let x = rand() * 512;
+            let y = rand() * 512;
+            const a = rand() * Math.PI * 2;
+            ctx.strokeStyle = bump ? (i % 2 ? "#c0c0c0" : "#404040") : i % 2 ? "rgba(240,235,225,0.7)" : "rgba(150,142,128,0.45)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            const len = 60 + rand() * 180;
+            ctx.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len);
+            ctx.stroke();
+        }
+    };
+    const map = canvasTexture(512, 512, draw(false));
+    const bumpMap = canvasTexture(512, 512, draw(true));
+    bumpMap.colorSpace = THREE.NoColorSpace;
+    return { map, bumpMap };
+}
+
+// Papier artisanal aux bords déchirés : couleur + découpe (alphaMap)
+function deckledPaper() {
+    const torn = (ctx: CanvasRenderingContext2D, fill: string) => {
+        seed = 33;
+        const m = 14; // profondeur des déchirures
+        const edge = () => m * (0.3 + rand() * 0.7);
+        ctx.fillStyle = fill;
+        ctx.beginPath();
+        ctx.moveTo(edge(), edge());
+        for (let x = 0; x <= 512; x += 6) ctx.lineTo(x, edge());
+        for (let y = 0; y <= 512; y += 6) ctx.lineTo(512 - edge(), y);
+        for (let x = 512; x >= 0; x -= 6) ctx.lineTo(x, 512 - edge());
+        for (let y = 512; y >= 0; y -= 6) ctx.lineTo(edge(), y);
+        ctx.closePath();
+        ctx.fill();
+    };
+    const map = canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#e7dfcf";
+        ctx.fillRect(0, 0, 512, 512);
+        seed = 34;
+        speckle(ctx, 512, 512, 4000, "rgba(170,158,135,0.5)");
+        speckle(ctx, 512, 512, 2500, "rgba(255,252,245,0.7)");
+    });
+    const alphaMap = canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, 512, 512);
+        torn(ctx, "#fff");
+    });
+    alphaMap.colorSpace = THREE.NoColorSpace;
+    return { map, alphaMap };
+}
+
+// Page vierge en papier recyclé (verso de la couverture)
+const blankPage = () =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#e6e2da";
+        ctx.fillRect(0, 0, 512, 512);
+        seed = 55;
+        speckle(ctx, 512, 512, 3000, "rgba(150,142,130,0.35)");
+    });
+
+// Carte lisse avec le logo
+const logoCard = () =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#e3e4e7";
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.fillStyle = "#151515";
+        ctx.font = "bold 44px Futura, 'Century Gothic', sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("vitra.", 470, 465);
+    });
+
+// Papier kraft : fibres brunes
+const kraftPaper = () =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#a8865f";
+        ctx.fillRect(0, 0, 512, 512);
+        seed = 61;
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 900; i++) {
+            const x = rand() * 512;
+            const y = rand() * 512;
+            const a = rand() * Math.PI;
+            ctx.strokeStyle = rand() > 0.5 ? "rgba(120,92,62,0.35)" : "rgba(222,200,170,0.4)";
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + Math.cos(a) * 10, y + Math.sin(a) * 10);
+            ctx.stroke();
+        }
+    });
+
+// Papier anthracite au grain fin
+const charcoalPaper = () =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#3b3936";
+        ctx.fillRect(0, 0, 512, 512);
+        seed = 77;
+        speckle(ctx, 512, 512, 3500, "rgba(120,116,110,0.5)");
+    });
+
+// Papier pointillé
+const dottedPaper = () =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#dfe2e5";
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.fillStyle = "rgba(110,115,120,0.6)";
+        for (let x = 16; x < 512; x += 24)
+            for (let y = 16; y < 512; y += 24) ctx.fillRect(x, y, 2.5, 2.5);
+    });
+
+// Papier ligné avec marge
+const linedPaper = () =>
+    canvasTexture(512, 512, (ctx) => {
+        ctx.fillStyle = "#f6f5f1";
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.strokeStyle = "rgba(140,150,160,0.45)";
+        ctx.lineWidth = 1.5;
+        for (let y = 40; y < 512; y += 28) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(512, y);
+            ctx.stroke();
+        }
+        ctx.strokeStyle = "rgba(190,120,110,0.4)";
+        ctx.beginPath();
+        ctx.moveTo(70, 0);
+        ctx.lineTo(70, 512);
+        ctx.stroke();
+    });
+
+// Axe des anneaux : les feuillets pivotent autour quand on tourne les pages
+const RING_X = -W / 2 - 0.03;
+
+function buildInserts() {
+    const group = new THREE.Group();
+    const crinkled = crinkledPaper();
+    const deckled = deckledPaper();
+    const side = THREE.DoubleSide;
+    const mat = (o: THREE.MeshStandardMaterialParameters) =>
+        new THREE.MeshStandardMaterial({ roughness: 0.95, side, ...o });
+
+    // Feuillets du dessous vers le dessus, volontairement dans le désordre.
+    // [largeur, hauteur, bord gauche, bord haut, matériau]
+    const sheets: [number, number, number, number, THREE.Material][] = [
+        [1.55, 1.3, -0.88, 0.95, mat({ ...crinkled, bumpScale: 2, roughness: 0.45, metalness: 0.25 })], // papier froissé nacré
+        [1.86, 2.02, -0.9, 1.01, mat({ map: gridPaper("#f1f0ec", 16) })], // grand quadrillé fin
+        [1.05, 0.85, -0.86, 0.92, mat({ map: kraftPaper() })], // petite carte kraft
+        [1.25, 1.5, -0.87, 0.6, mat({ map: charcoalPaper() })], // papier anthracite
+        [1.4, 1.8, -0.92, 0.85, mat({ ...deckled, transparent: true, alphaTest: 0.5, roughness: 1 })], // papier artisanal déchiré
+        [1.75, 1.4, -0.9, 0.35, mat({ color: 0xffffff, transparent: true, opacity: 0.45, roughness: 0.4, depthWrite: false })], // papier calque
+        [1.2, 1.15, -0.85, 0.98, mat({ map: dottedPaper() })], // pointillé
+        [1.3, 1.05, -0.93, 0.0, new THREE.MeshStandardMaterial({ map: logoCard(), roughness: 0.8 })], // carte vitra.
+        [1.6, 1.05, -0.88, 1.0, mat({ map: linedPaper() })], // ligné
+    ];
+
+    const pivots = sheets.map(([w, h, left, top, material], i) => {
+        // Chaque feuillet est accroché à un pivot placé sur l'axe des anneaux
+        const pivot = new THREE.Group();
+        const z = PAGES / 2 + 0.004 + i * 0.004;
+        pivot.position.set(RING_X, 0, z);
+        pivot.userData.z = z;
+
+        const sheet = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
+        sheet.position.set(left + w / 2 - RING_X, top - h / 2, 0);
+        sheet.castShadow = !material.transparent || material.alphaTest > 0;
+        sheet.receiveShadow = !material.transparent || material.alphaTest > 0; // le calque reste lumineux
+        pivot.add(sheet);
+
+        // Verso uni pour la carte (pour ne pas voir le logo à l'envers)
+        if (material.side !== side) {
+            const back = new THREE.Mesh(
+                new THREE.PlaneGeometry(w, h),
+                new THREE.MeshStandardMaterial({ color: 0xe3e4e7, roughness: 0.8 }),
+            );
+            back.rotation.y = Math.PI;
+            back.position.copy(sheet.position);
+            back.position.z -= 0.001;
+            pivot.add(back);
+        }
+
+        group.add(pivot);
+        return pivot;
+    });
+
+    // Feuillets du dessus vers le dessous : c'est l'ordre dans lequel on les tourne
+    return { group, pivots: pivots.reverse() };
+}
+
+/**
+ * Carnet. Pour l'ouvrir : carnet.userData.setOpen(e), avec e entre 0 (fermé) et 1 (ouvert).
+ */
+export function buildCarnet() {
+    const group = new THREE.Group(); // inclinaison générale
+    const body = new THREE.Group(); // se décale quand le carnet s'ouvre
+    group.add(body);
+
+    const frontZ = PAGES / 2 + GAP + COVER / 2;
+    const backZ = -(PAGES / 2 + COVER / 2);
+
+    // Couverture avant, montée sur une charnière à gauche
     const plain = new THREE.MeshStandardMaterial({ color: COLORS.cover, roughness: 0.95 });
     const t = buildCoverTextures();
     const front = new THREE.MeshStandardMaterial({
@@ -278,10 +518,24 @@ export function buildCarnet() {
         roughness: 0.75,
     });
     const coverGeo = new THREE.BoxGeometry(W, H, COVER);
+    const hinge = new THREE.Group();
+    hinge.position.set(-W / 2, 0, frontZ);
     const frontCover = new THREE.Mesh(coverGeo, [plain, plain, plain, plain, front, plain]);
-    frontCover.position.z = half;
+    frontCover.position.x = W / 2;
+    hinge.add(frontCover);
+
+    // Page vierge collée au verso de la couverture (visible une fois ouvert)
+    const leftPage = new THREE.Mesh(
+        new THREE.PlaneGeometry(W - 0.12, H - 0.1),
+        new THREE.MeshStandardMaterial({ map: blankPage(), roughness: 1 }),
+    );
+    leftPage.rotation.y = Math.PI;
+    leftPage.position.set(W / 2 + 0.02, 0, -COVER / 2 - 0.004);
+    leftPage.receiveShadow = true;
+    hinge.add(leftPage);
+
     const backCover = new THREE.Mesh(coverGeo, plain);
-    backCover.position.z = -half;
+    backCover.position.z = backZ;
 
     // Bloc de pages, légèrement en retrait
     const edge = buildPaperEdge();
@@ -292,22 +546,41 @@ export function buildCarnet() {
         [paperSide, paperSide, paperSide, paperSide, paperFlat, paperFlat],
     );
     pages.position.x = 0.02;
+    pages.receiveShadow = true;
 
     for (const m of [frontCover, backCover, pages]) {
         m.castShadow = true;
-        group.add(m);
+        if (m !== pages) body.add(m === frontCover ? hinge : m);
     }
+    const inserts = buildInserts();
+    body.add(pages, inserts.group);
 
     // Anneaux métalliques qui traversent le bord gauche
     const metal = new THREE.MeshStandardMaterial({ color: COLORS.metal, metalness: 1, roughness: 0.3 });
-    const ringGeo = new THREE.TorusGeometry(0.2, 0.02, 16, 48);
+    const ringGeo = new THREE.TorusGeometry(0.21, 0.02, 16, 48);
     for (const y of RINGS_Y) {
         const ring = new THREE.Mesh(ringGeo, metal);
         ring.rotation.x = Math.PI / 2;
-        ring.position.set(-W / 2 + 0.09 - 0.12, y, 0);
+        ring.position.set(-W / 2 - 0.03, y, (frontZ + backZ) / 2);
         ring.castShadow = true;
-        group.add(ring);
+        body.add(ring);
     }
+
+    // Ouverture : la couverture pivote sur sa charnière, l'ensemble se recentre
+    group.userData.setOpen = (e: number) => {
+        hinge.rotation.y = -Math.PI * e;
+        body.position.x = (W / 2) * e;
+    };
+
+    // Pages : chaque feuillet tourné vient se poser à gauche, au-dessus des précédents
+    const leftZ = frontZ + COVER / 2 + 0.008; // surface de la page de gauche, carnet ouvert
+    group.userData.pageCount = inserts.pivots.length;
+    group.userData.setPage = (k: number, e: number) => {
+        const pivot = inserts.pivots[k];
+        const z0 = pivot.userData.z as number;
+        pivot.rotation.y = -Math.PI * e;
+        pivot.position.z = z0 + (leftZ + k * 0.004 - z0) * e;
+    };
 
     // Légère inclinaison, comme un carnet posé en présentoir
     group.rotation.x = -0.12;
