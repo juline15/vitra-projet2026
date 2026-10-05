@@ -66,10 +66,6 @@ export const visuels = {
         { src: '/affiche_batiment2.webp', alt: 'Affiche évènement', caption: 'Affiche évènement' },
         { src: '/affiche_batiment3.webp', alt: 'Affiche évènement', caption: 'Affiche évènement' },
     ],
-    videos: [
-        { src: '', poster: '', alt: 'Vidéo annonce', caption: 'Annonce' },
-        { src: '', poster: '', alt: 'Vidéo objets', caption: 'La gourde et le carnet' },
-    ],
 };
 
 export const deroule = [

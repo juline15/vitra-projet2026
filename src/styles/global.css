@@ -65,3 +65,26 @@
         color: var(--color-paper);
     }
 }
+
+/* Apparition du Hero à l'arrivée sur le site */
+@keyframes hero-rise {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.hero-reveal {
+    animation: hero-rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-reveal {
+        animation: none;
+    }
+}
