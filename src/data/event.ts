@@ -102,7 +102,7 @@ export const batiment = {
         ratio: 'aspect-[4/3]',
     },
     mockup: {
-        src: 'mockup_batiment.webp',
+        src: '/mockup_batiment.png',
         alt: 'Mockup du nouveau bâtiment intégré au Vitra Campus',
         caption: 'Projection du bâtiment',
         ratio: 'aspect-[4/3]',
