@@ -1,6 +1,7 @@
 ---
 import { event } from "../data/event";
 const { location } = event;
+const onPlan = Astro.url.pathname.startsWith("/plan-du-site");
 ---
 
 <footer id="infos" class="scroll-mt-24 bg-ink text-paper">
@@ -52,16 +53,27 @@ const { location } = event;
         <div
             class="mt-16 grid gap-2 border-t border-paper/30 pt-6 text-sm text-paper/60 md:mt-24 md:gap-4 lg:grid-cols-3"
         >
-            <p>{event.title}</p>
+            <p>
+                {event.title} ·{" "}
+                <a
+                    href="/plan-du-site"
+                    aria-current={onPlan ? "page" : undefined}
+                    class="text-paper underline underline-offset-4 hover:no-underline"
+                >
+                    Plan du site
+                </a>
+            </p>
             <p class="lg:text-center">
                 Création{" "}
                 <a
                     href="https://www.instagram.com/juline_crea/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-paper underline-offset-4 hover:underline"
+                    class="text-paper underline underline-offset-4 hover:no-underline"
                 >
-                    @juline_crea
+                    @juline_crea<span class="sr-only">
+                        sur Instagram (nouvelle fenêtre)</span
+                    >
                 </a>
             </p>
             <p class="lg:text-right">Projet étudiant, non affilié à Vitra.</p>

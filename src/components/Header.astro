@@ -1,12 +1,15 @@
 ---
+const isHome = Astro.url.pathname === "/";
+const base = isHome ? "" : "/";
+
 const links = [
-    { href: "#concept", label: "Concept" },
-    { href: "#designer", label: "Le designer" },
-    { href: "#batiment", label: "Le bâtiment" },
-    { href: "#visuels", label: "Visuels" },
-    { href: "#deroule", label: "Déroulé" },
-    { href: "#inscription", label: "Inscription" },
-    { href: "#infos", label: "Infos pratiques" },
+    { href: `${base}#concept`, label: "Concept" },
+    { href: `${base}#designer`, label: "Le designer" },
+    { href: `${base}#batiment`, label: "Le bâtiment" },
+    { href: `${base}#visuels`, label: "Visuels" },
+    { href: `${base}#deroule`, label: "Déroulé" },
+    { href: `${base}#inscription`, label: "Inscription" },
+    { href: `${base}#infos`, label: "Infos pratiques" },
 ];
 ---
 
@@ -16,7 +19,7 @@ const links = [
     <div
         class="mx-auto flex max-w-screen-2xl items-center justify-between px-5 py-3 md:px-10 md:py-4"
     >
-        <a href="#" class="logo-adapt inline-block">
+        <a href={isHome ? "#" : "/"} class="logo-adapt inline-block">
             <img
                 src="/Vitra-Logo.png"
                 alt="Vitra, retour en haut de la page"

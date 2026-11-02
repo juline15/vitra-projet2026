@@ -1,0 +1,63 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Infos from "../components/Infos.astro";
+import { event } from "../data/event";
+
+const sections = [
+    { href: "/#concept", label: "Le concept et le pop-up store" },
+    { href: "/#designer", label: "Le designer : Maxime Bellaunay" },
+    { href: "/#batiment", label: "Le bâtiment" },
+    { href: "/#visuels", label: "Visuels : affiches et vidéos" },
+    { href: "/#deroule", label: "Déroulé de la soirée" },
+    { href: "/#inscription", label: "Inscription à l'évènement" },
+    { href: "/#infos", label: "Infos pratiques" },
+];
+const link = "underline underline-offset-4 hover:no-underline";
+---
+
+<Layout
+    title={`Plan du site | ${event.title}`}
+    description={`Toutes les pages et rubriques du site ${event.title}.`}
+>
+    <Header />
+    <main
+        id="contenu"
+        class="mx-auto max-w-screen-2xl px-5 py-16 md:px-10 md:py-24"
+    >
+        <h1
+            class="font-display text-3xl font-semibold tracking-tight md:text-5xl lg:text-6xl"
+        >
+            Plan du site
+        </h1>
+
+        <nav aria-labelledby="plan-titre" class="mt-10 md:mt-16">
+            <h2 id="plan-titre" class="sr-only">
+                Liste des pages et rubriques
+            </h2>
+            <ul class="space-y-6 text-lg">
+                <li>
+                    <a
+                        href="/"
+                        class:list={[
+                            link,
+                            "font-display text-2xl font-semibold",
+                        ]}>Accueil</a
+                    >
+                    <ul class="mt-4 space-y-3 border-l border-stone pl-6">
+                        {
+                            sections.map((s) => (
+                                <li>
+                                    <a href={s.href} class={link}>
+                                        {s.label}
+                                    </a>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </main>
+    <Infos />
+</Layout>
