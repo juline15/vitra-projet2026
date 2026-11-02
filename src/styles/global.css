@@ -38,16 +38,70 @@
     font-display: swap;
 }
 
-@theme {
+/* Couleurs primitives : remplace par les valeurs hex exactes de Figma */
+:root {
+    --neutral-0: #ffffff;
+    --neutral-950: #000000;
+    --beige-100: #efede9;
+    --beige-950: #1c1a17;
+    --gray-200: #d6d2cb;
+    --gray-600: #6b6862;
+}
+
+/* Thème clair (par défaut, et forcé dans les blocs .theme-light) */
+:root,
+.theme-light {
+    --paper: var(--neutral-0);
+    --ink: var(--neutral-950);
+    --plaster: var(--beige-100);
+    --concrete: var(--gray-200);
+    --stone: var(--gray-600);
+    color-scheme: light;
+}
+
+/* Thème sombre : selon le réglage du système, sauf choix contraire de l'utilisateur */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --paper: var(--neutral-950);
+        --ink: var(--neutral-0);
+        --plaster: var(--beige-950);
+        --concrete: var(--gray-600);
+        --stone: var(--gray-200);
+        color-scheme: dark;
+    }
+}
+
+:root[data-theme="dark"] {
+    --paper: var(--neutral-950);
+    --ink: var(--neutral-0);
+    --plaster: var(--beige-950);
+    --concrete: var(--gray-600);
+    --stone: var(--gray-200);
+    color-scheme: dark;
+}
+
+/* Tailwind lit les variables : bg-paper, text-ink, border-concrete… changent de thème tout seuls */
+@theme inline {
     --font-sans: "Futura", "Century Gothic", sans-serif;
     --font-display: "Futura", "Century Gothic", sans-serif;
     --font-condensed: "Futura Condensed", "Futura", sans-serif;
 
-    --color-ink: #000000;
-    --color-paper: #ffffff;
-    --color-plaster: #efede9;
-    --color-concrete: #d6d2cb;
-    --color-stone: #6b6862;
+    --color-paper: var(--paper);
+    --color-ink: var(--ink);
+    --color-plaster: var(--plaster);
+    --color-concrete: var(--concrete);
+    --color-stone: var(--stone);
+}
+
+/* Le logo noir du header devient blanc en mode sombre */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .logo-adapt {
+        filter: invert(1);
+    }
+}
+
+:root[data-theme="dark"] .logo-adapt {
+    filter: invert(1);
 }
 
 @utility font-wide {

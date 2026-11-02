@@ -37,7 +37,10 @@ import { batiment } from "../data/event";
                                     alt={img.alt}
                                     loading="lazy"
                                     decoding="async"
-                                    class="h-full w-full object-contain"
+                                    class:list={[
+                                        "h-full w-full object-contain",
+                                        img === batiment.dessin && "logo-adapt",
+                                    ]}
                                 />
                             </div>
                             <figcaption class="mt-2 text-sm text-stone md:mt-3">

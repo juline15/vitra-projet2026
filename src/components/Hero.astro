@@ -31,7 +31,7 @@ import { event } from "../data/event";
                         <img
                             src={event.logo}
                             alt={event.title}
-                            class="h-auto w-full max-w-150"
+                            class="logo-adapt h-auto w-full max-w-150"
                         />
                     ) : (
                         <span class="flex aspect-[4/1] w-full max-w-150 items-center justify-center border border-dashed border-stone/60 bg-plaster/80 text-sm text-stone">
@@ -57,11 +57,11 @@ import { event } from "../data/event";
                 class="grid grid-cols-2 gap-6 text-sm lg:col-span-4 lg:col-start-9"
             >
                 <div>
-                    <dt class="text-stone">Date</dt>
+                    <dt class="text-stone"><p>Date</p></dt>
                     <dd class="mt-1 text-base"><p>{event.date}</p></dd>
                 </div>
                 <div>
-                    <dt class="text-stone">Lieu</dt>
+                    <dt class="text-stone"><p>Lieu</p></dt>
                     <dd class="mt-1 text-base">
                         <p>{event.location.name}<br />{event.location.city}</p>
                     </dd>
