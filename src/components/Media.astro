@@ -7,7 +7,8 @@ interface Props {
     label?: string;
     poster?: string;
     autoplay?: boolean;
-    fit?: "cover" | "contain"; // ← ajouté
+    fit?: "cover" | "contain";
+    warning?: string; // avertissement affiché avant la lecture de la vidéo
     class?: string;
 }
 const {
@@ -18,12 +19,13 @@ const {
     label,
     poster,
     autoplay = false,
-    fit = "cover", // ← ajouté
+    fit = "cover",
+    warning,
     class: cls = "",
 } = Astro.props;
 ---
 
-<div class:list={["relative overflow-hidden bg-plaster", ratio, cls]}>
+<div class:list={["media relative overflow-hidden bg-plaster", ratio, cls]}>
     {
         !src ? (
             <div class="absolute inset-0 flex items-center justify-center border border-dashed border-stone/50 p-2 text-center text-xs text-stone sm:p-4 sm:text-sm">
@@ -37,6 +39,7 @@ const {
                     class="h-full w-full object-cover"
                     aria-label={alt}
                     data-autoplay
+                    data-locked={warning ? "" : undefined}
                     muted
                     playsinline
                     preload="auto"
@@ -62,6 +65,31 @@ const {
             />
         )
     }
+
+    {
+        warning && src && type === "video" && (
+            <div
+                class="media-warning absolute inset-0 z-10 flex items-center justify-center bg-ink/85 p-5 text-paper backdrop-blur-sm"
+                role="region"
+                aria-label="Avertissement avant la lecture de la vidéo"
+            >
+                <div class="max-w-md text-center">
+                    <p class="font-display text-lg font-bold md:text-2xl">
+                        <span aria-hidden="true">⚠ </span>Avertissement
+                    </p>
+                    <p class="mt-2 text-sm leading-relaxed md:mt-3 md:text-base">
+                        {warning}
+                    </p>
+                    <button
+                        type="button"
+                        class="media-warning-play mt-4 border border-paper px-4 py-2 text-sm transition-colors hover:bg-paper hover:text-ink md:mt-6"
+                    >
+                        Lancer la vidéo
+                    </button>
+                </div>
+            </div>
+        )
+    }
 </div>
 
 <script>
@@ -76,6 +104,35 @@ const {
         v.controls = true;
     };
 
+    // Lève l'avertissement d'un cadre et, si possible, lance la vidéo
+    const unlock = (box: HTMLElement, play: boolean) => {
+        box.querySelector(".media-warning")?.remove();
+        const v = box.querySelector<HTMLVideoElement>("video");
+        if (!v) return;
+        delete v.dataset.locked;
+        if (reduceMotion) showControls(v);
+        else if (play) v.play().catch(() => showControls(v));
+    };
+
+    // Si l'avertissement a déjà été accepté pendant cette visite, on ne le remontre pas
+    let accepted = false;
+    try {
+        accepted = sessionStorage.getItem("video-warning-ok") === "1";
+    } catch (e) {}
+
+    document
+        .querySelectorAll<HTMLElement>(".media-warning")
+        .forEach((overlay) => {
+            const box = overlay.closest<HTMLElement>(".media")!;
+            if (accepted) return unlock(box, false);
+            overlay.querySelector("button")!.addEventListener("click", () => {
+                try {
+                    sessionStorage.setItem("video-warning-ok", "1");
+                } catch (e) {}
+                unlock(box, true);
+            });
+        });
+
     if (reduceMotion) {
         videos.forEach(showControls);
     } else {
@@ -83,11 +140,9 @@ const {
             (entries) => {
                 entries.forEach(({ target, isIntersecting }) => {
                     const v = target as HTMLVideoElement;
-                    if (isIntersecting) {
-                        v.play().catch(() => showControls(v));
-                    } else {
-                        v.pause();
-                    }
+                    if (v.dataset.locked !== undefined) return; // en attente de l'accord
+                    if (isIntersecting) v.play().catch(() => showControls(v));
+                    else v.pause();
                 });
             },
             { threshold: 0.6 },
