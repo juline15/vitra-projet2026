@@ -1,0 +1,304 @@
+---
+import Cta from "./Cta.astro";
+import { event } from "../data/event";
+
+const field =
+    "mt-1.5 w-full rounded-md border border-stone bg-paper px-3 py-2.5 text-base text-ink aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger";
+const error = "mt-1.5 text-sm font-semibold text-danger";
+---
+
+<section
+    id="inscription"
+    tabindex="-1"
+    aria-labelledby="inscription-titre"
+    class="scroll-mt-24 border-t border-concrete outline-none"
+>
+    <div
+        class="mx-auto grid max-w-screen-2xl gap-10 px-5 py-16 md:px-10 md:py-24 lg:grid-cols-12 lg:py-32"
+    >
+        <!-- Compte à rebours -->
+        <div class="lg:col-span-5">
+            <h2
+                class="font-display text-3xl font-semibold tracking-tight md:text-5xl lg:text-6xl"
+            >
+                Temps avant l'évènement
+            </h2>
+            <p
+                class="countdown mt-8 font-display text-5xl tabular-nums md:mt-12 md:text-7xl"
+                role="timer"
+                data-target={event.startsAt}
+            >
+                …
+            </p>
+            <p class="mt-4 text-stone">
+                Avant-première le {event.date}, ouverture au public le {
+                    event.publicDate
+                }.
+            </p>
+        </div>
+
+        <!-- Formulaire -->
+        <div
+            class="rounded-xl border border-concrete bg-paper p-6 md:p-8 lg:col-span-6 lg:col-start-7"
+        >
+            <p class="text-xs tracking-wide text-stone uppercase">
+                Évènement · Inscription
+            </p>
+            <h2
+                id="inscription-titre"
+                class="mt-1 font-display text-2xl font-semibold md:text-3xl"
+            >
+                Rejoignez notre évènement
+            </h2>
+            <p id="form-aide" class="mt-2 text-sm text-stone">
+                Les champs marqués d'un astérisque (*) sont obligatoires.
+            </p>
+
+            <form
+                id="form-inscription"
+                class="mt-6 space-y-5"
+                novalidate
+                aria-describedby="form-aide"
+            >
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label for="prenom" class="block text-sm font-semibold">
+                            Prénom <span aria-hidden="true">*</span>
+                        </label>
+                        <input
+                            id="prenom"
+                            name="prenom"
+                            type="text"
+                            autocomplete="given-name"
+                            required
+                            aria-describedby="prenom-erreur"
+                            class={field}
+                        />
+                        <p id="prenom-erreur" class={error} hidden></p>
+                    </div>
+                    <div>
+                        <label for="nom" class="block text-sm font-semibold">
+                            Nom <span aria-hidden="true">*</span>
+                        </label>
+                        <input
+                            id="nom"
+                            name="nom"
+                            type="text"
+                            autocomplete="family-name"
+                            required
+                            aria-describedby="nom-erreur"
+                            class={field}
+                        />
+                        <p id="nom-erreur" class={error} hidden></p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-semibold">
+                        Adresse email <span aria-hidden="true">*</span>
+                    </label>
+                    <p id="email-aide" class="text-sm text-stone">
+                        Exemple : nom@domaine.fr
+                    </p>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                        aria-describedby="email-aide email-erreur"
+                        class={field}
+                    />
+                    <p id="email-erreur" class={error} hidden></p>
+                </div>
+
+                <fieldset>
+                    <legend class="text-sm font-semibold"
+                        >Nombre de participants <span aria-hidden="true">*</span
+                        ></legend
+                    >
+                    <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                        {
+                            [1, 2, 3].map((n) => (
+                                <label class="flex min-h-11 items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        name="participants"
+                                        value={n}
+                                        checked={n === 1}
+                                        class="h-5 w-5 accent-ink"
+                                    />
+                                    {n} {n > 1 ? "personnes" : "personne"}
+                                </label>
+                            ))
+                        }
+                    </div>
+                </fieldset>
+
+                <div>
+                    <label for="message" class="block text-sm font-semibold">
+                        Un message à nous transmettre ? (facultatif)
+                    </label>
+                    <textarea id="message" name="message" rows="3" class={field}
+                    ></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-start gap-3">
+                        <input
+                            id="consentement"
+                            name="consentement"
+                            type="checkbox"
+                            required
+                            aria-describedby="consentement-erreur"
+                            class="mt-0.5 h-5 w-5 shrink-0 accent-ink"
+                        />
+                        <label for="consentement" class="text-sm">
+                            J'accepte que mes informations soient utilisées pour
+                            mon inscription à cet évènement. <span
+                                aria-hidden="true">*</span
+                            >
+                        </label>
+                    </div>
+                    <p id="consentement-erreur" class={error} hidden></p>
+                </div>
+
+                <Cta type="submit" class="w-full">Valider mon inscription</Cta>
+                <p class="text-xs text-stone">
+                    Formulaire de démonstration : aucune donnée n'est envoyée ni
+                    conservée.
+                </p>
+            </form>
+
+            <!-- Message de confirmation -->
+            <div
+                id="form-succes"
+                class="mt-6 rounded-xl border border-card-line bg-card p-6 text-center text-card-title md:p-8"
+                hidden
+            >
+                <div
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-card-btn text-2xl text-card-btn-text"
+                    aria-hidden="true"
+                >
+                    ✓
+                </div>
+                <h3
+                    id="form-succes-titre"
+                    tabindex="-1"
+                    class="mt-4 font-display text-2xl font-semibold outline-none"
+                >
+                    Validé : enregistrement réussi
+                </h3>
+                <p
+                    id="form-succes-texte"
+                    class="mt-3 leading-relaxed text-card-text"
+                >
+                </p>
+                <button
+                    type="button"
+                    id="form-reset"
+                    class="mt-6 text-sm underline underline-offset-4"
+                >
+                    Faire une autre inscription
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    /* ----- Compte à rebours (mis à jour chaque minute) ----- */
+    const countdown = document.querySelector<HTMLElement>(".countdown");
+    if (countdown) {
+        const target = new Date(countdown.dataset.target!).getTime();
+        const update = () => {
+            const diff = target - Date.now();
+            if (diff <= 0) {
+                countdown.textContent = "C'est parti !";
+                return;
+            }
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            countdown.textContent = `${d} j ${h} h ${m} min`;
+        };
+        update();
+        setInterval(update, 60000);
+    }
+
+    /* ----- Formulaire ----- */
+    const form = document.getElementById("form-inscription") as HTMLFormElement;
+    const success = document.getElementById("form-succes")!;
+    const successTitle = document.getElementById("form-succes-titre")!;
+    const successText = document.getElementById("form-succes-texte")!;
+
+    type Field = HTMLInputElement;
+    const rules: [string, (el: Field) => string][] = [
+        ["prenom", (el) => (el.value.trim() ? "" : "Indiquez votre prénom.")],
+        ["nom", (el) => (el.value.trim() ? "" : "Indiquez votre nom.")],
+        [
+            "email",
+            (el) =>
+                !el.value.trim()
+                    ? "Indiquez votre adresse email."
+                    : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim())
+                      ? ""
+                      : "L'adresse email n'est pas valide. Exemple : nom@domaine.fr",
+        ],
+        [
+            "consentement",
+            (el) =>
+                el.checked
+                    ? ""
+                    : "Cochez cette case pour valider votre inscription.",
+        ],
+    ];
+
+    const setError = (el: Field, msg: string) => {
+        const err = document.getElementById(`${el.id}-erreur`)!;
+        err.textContent = msg ? `Erreur : ${msg}` : "";
+        err.hidden = !msg;
+        if (msg) el.setAttribute("aria-invalid", "true");
+        else el.removeAttribute("aria-invalid");
+    };
+
+    // Le message d'erreur disparaît dès que le champ est corrigé
+    rules.forEach(([id, check]) => {
+        const el = form.elements.namedItem(id) as Field;
+        el.addEventListener("change", () => {
+            if (el.hasAttribute("aria-invalid")) setError(el, check(el));
+        });
+    });
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        // Vérifie chaque champ et place le focus sur la première erreur
+        let firstError: Field | null = null;
+        for (const [id, check] of rules) {
+            const el = form.elements.namedItem(id) as Field;
+            const msg = check(el);
+            setError(el, msg);
+            if (msg && !firstError) firstError = el;
+        }
+        if (firstError) {
+            firstError.focus();
+            return;
+        }
+
+        // Inscription fictive : rien n'est envoyé, on affiche la confirmation
+        const data = new FormData(form);
+        const n = Number(data.get("participants"));
+        successText.textContent = `Merci ${data.get("prenom")}, votre inscription pour ${n} ${n > 1 ? "personnes" : "personne"} est bien enregistrée. Une confirmation serait envoyée à ${data.get("email")}.`;
+        form.hidden = true;
+        success.hidden = false;
+        successTitle.focus();
+    });
+
+    document.getElementById("form-reset")!.addEventListener("click", () => {
+        form.reset();
+        success.hidden = true;
+        form.hidden = false;
+        (form.elements.namedItem("prenom") as HTMLInputElement).focus();
+    });
+</script>

@@ -7,6 +7,8 @@ export const event = {
     subtitle:
         "Soirée d'inauguration du nouveau bâtiment du Vitra et de l'exposition de Maxime Bellaunay",
     date: '20 sept. 2028- 17h à 21h',
+    startsAt: '2028-09-20T17:00:00+02:00',
+    publicDate: '21 sept. 2028',
     logo: '/vitraxmaxime.svg',
     teaser: { src: '/Intro_Vitra_texte_son.mp4', poster: '' },
     location: {
@@ -37,14 +39,44 @@ export const concept = {
         text: "Au cœur de l'événement, une boutique éphémère présente deux objets dessinés par Maxime Bellaunay pour l'exposition. Plus qu'un produit dérivé : un souvenir à utiliser au quotidien.",
         objets: [
             {
+                id: 'gourde',
+                badge: 'Objet',
+                collection: 'Collection Vitra',
                 name: 'La gourde',
                 text: 'Une gourde sculpturale : un objet de tous les jours, traité comme une pièce de design.',
                 image: '/mockup_gourde1.webp',
+                alt: 'Gourde beige aux courbes sculpturales, avec une anse en anneau, posée sur une table en bois',
+                description: [
+                    "Maxime Bellaunay a dessiné cette gourde comme une petite sculpture : une silhouette en double courbe, légèrement déhanchée, et une anse en anneau qui tient naturellement dans la main.",
+                    "Pensée pour être utilisée chaque jour, elle prolonge l'exposition bien après la visite.",
+                ],
+                details: [
+                    ['Matière', 'Acier inoxydable, finition mate'],
+                    ['Contenance', '500 ml'],
+                    ['Dimensions', '24 × 12 cm'],
+                    ['Édition', "Limitée, créée pour l'inauguration"],
+                    ['Prix', '69 €'],
+                ],
             },
             {
+                id: 'carnet',
+                badge: 'Papeterie',
+                collection: 'Collection Vitra',
                 name: 'Le carnet',
                 text: 'Un carnet en relief : la matière devient un support de création.',
                 image: '/mockup_carnet1.webp',
+                alt: 'Carnet à anneaux dont la couverture grise présente un relief minéral, posé sur un bureau',
+                description: [
+                    "Sa couverture reprend la matière brute de l'exposition. À l'intérieur, les feuillets changent de format et de texture au fil des pages : quadrillé, ligné, kraft, calque, papier artisanal…",
+                    "Grâce aux anneaux, chacun peut réorganiser son carnet et y garder la trace de sa visite.",
+                ],
+                details: [
+                    ['Couverture', 'Carton gaufré, relief minéral'],
+                    ['Pages', '9 papiers de formats et de textures différents'],
+                    ['Format', '16 × 17 cm'],
+                    ['Reliure', '4 anneaux métalliques'],
+                    ['Prix', '39 €'],
+                ],
             },
         ],
     },
@@ -59,6 +91,7 @@ export const designer = {
         "Dans une démarche empreinte de spontanéité, la matière influence le dessin de ses objets. En se laissant guider par les irrégularités de la roche, les motifs organiques du bois ou les subtilités du métal, il initie un dialogue instinctif avec ses matériaux, sculptant ainsi des paysages bruts et singuliers.",
     ],
     quote: 'Il réalise des pièces uniques et sur-mesure, façonnées au gré de ses voyages, entre la France et le Japon.',
+    link: 'https://www.bellaunay.com',
 };
 
 export const visuels = {
@@ -108,3 +141,4 @@ export const batiment = {
         ratio: 'aspect-[4/3]',
     },
 };
+

@@ -1,6 +1,7 @@
 ---
 import Media from "./Media.astro";
 import { concept } from "../data/event";
+import Cta from "./Cta.astro";
 ---
 
 <section
@@ -52,28 +53,163 @@ import { concept } from "../data/event";
             >
                 {concept.popup.text}
             </p>
+            <Cta href="#inscription" class="mt-6">S'inscrire à l'évènement</Cta>
         </div>
+
         <ul
-            class="grid grid-cols-2 gap-4 sm:gap-8 lg:col-span-7 lg:col-start-6"
+            class="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:col-span-7 lg:col-start-6"
         >
             {
                 concept.popup.objets.map((o) => (
-                    <li>
-                        <Media
-                            src={o.image}
-                            alt={o.name}
-                            label={`Visuel : ${o.name.toLowerCase()}`}
-                            ratio="aspect-[4/5]"
-                        />
-                        <h4 class="mt-3 font-display text-base font-semibold md:mt-4 md:text-lg">
-                            {o.name}
-                        </h4>
-                        <p class="mt-1 text-sm leading-relaxed text-stone md:text-base">
-                            {o.text}
-                        </p>
+                    <li class="flex flex-col overflow-hidden rounded-xl border border-concrete bg-paper">
+                        <div class="relative">
+                            <Media
+                                src={o.image}
+                                alt={o.alt}
+                                label={`Visuel : ${o.name.toLowerCase()}`}
+                                ratio="aspect-[4/3]"
+                            />
+                            <p class="absolute top-3 left-3 rounded-full bg-paper px-3 py-1 text-xs font-semibold text-ink">
+                                {o.badge}
+                            </p>
+                        </div>
+                        <div class="flex flex-1 flex-col p-5">
+                            <p class="text-xs tracking-wide text-stone uppercase">
+                                {o.collection}
+                            </p>
+                            <h4 class="mt-1 font-display text-xl font-semibold">
+                                {o.name}
+                            </h4>
+                            <p class="mt-2 text-sm leading-relaxed text-stone">
+                                {o.text}
+                            </p>
+                            <div class="mt-auto pt-5">
+                                <Cta
+                                    class="w-full"
+                                    aria-haspopup="dialog"
+                                    data-open-dialog={`objet-${o.id}`}
+                                >
+                                    Découvrir le produit
+                                    <span class="sr-only"> : {o.name}</span>
+                                </Cta>
+                            </div>
+                        </div>
                     </li>
                 ))
             }
         </ul>
     </div>
+
+    {
+        concept.popup.objets.map((o) => (
+            <dialog
+                id={`objet-${o.id}`}
+                aria-labelledby={`objet-${o.id}-titre`}
+                class="m-auto max-h-[calc(100dvh-2rem)] w-[min(56rem,calc(100%-2rem))] overflow-y-auto rounded-xl bg-paper p-0 text-ink backdrop:bg-black/60"
+            >
+                <div class="grid md:grid-cols-2">
+                    <Media
+                        src={o.image}
+                        alt={o.alt}
+                        label={`Visuel : ${o.name.toLowerCase()}`}
+                        ratio="aspect-[4/3] md:aspect-[4/5]"
+                    />
+
+                    <div class="relative p-6 md:p-8">
+                        <button
+                            type="button"
+                            data-close-dialog
+                            class="absolute top-3 right-3 flex h-11 w-11 items-center justify-center rounded-full hover:bg-plaster"
+                        >
+                            <span aria-hidden="true">✕</span>
+                            <span class="sr-only">
+                                Fermer la fiche : {o.name}
+                            </span>
+                        </button>
+
+                        <p class="text-xs tracking-wide text-stone uppercase">
+                            {o.collection}
+                        </p>
+                        <h3
+                            id={`objet-${o.id}-titre`}
+                            class="mt-1 pr-12 font-display text-3xl font-semibold"
+                        >
+                            {o.name}
+                        </h3>
+                        {o.description.map((p) => (
+                            <p class="mt-4 leading-relaxed">{p}</p>
+                        ))}
+
+                        <dl class="mt-6 divide-y divide-concrete border-y border-concrete text-sm">
+                            {o.details.map(([label, value]) => (
+                                <div class="flex justify-between gap-4 py-2.5">
+                                    <dt class="text-stone">{label}</dt>
+                                    <dd class="text-right">{value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+
+                        <p class="mt-6 text-sm text-stone">
+                            En vente au pop-up store dès l'avant-première.
+                        </p>
+                        <Cta
+                            href="#inscription"
+                            data-close-dialog
+                            class="mt-4 w-full"
+                        >
+                            S'inscrire à l'évènement
+                        </Cta>
+                    </div>
+                </div>
+            </dialog>
+        ))
+    }
+
+    <script>
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        // Ouverture : la fiche s'ouvre en fenêtre modale, et le focus revient au bouton à la fermeture
+        document
+            .querySelectorAll<HTMLButtonElement>("[data-open-dialog]")
+            .forEach((btn) => {
+                const dialog = document.getElementById(
+                    btn.dataset.openDialog!,
+                ) as HTMLDialogElement;
+                btn.addEventListener("click", () => dialog.showModal());
+                dialog.addEventListener("close", () => {
+                    if (dialog.dataset.skipFocus)
+                        delete dialog.dataset.skipFocus;
+                    else btn.focus();
+                });
+                // Clic sur le fond assombri : ferme la fiche
+                dialog.addEventListener("click", (e) => {
+                    if (e.target === dialog) dialog.close();
+                });
+            });
+
+        // Fermeture : bouton ✕, ou bouton « S'inscrire » qui mène ensuite au formulaire
+        document
+            .querySelectorAll<HTMLElement>("[data-close-dialog]")
+            .forEach((el) => {
+                el.addEventListener("click", (e) => {
+                    const dialog = el.closest("dialog")!;
+                    const hash = el.getAttribute("href");
+                    if (hash?.startsWith("#")) {
+                        e.preventDefault();
+                        dialog.dataset.skipFocus = "1";
+                        dialog.close();
+                        const target =
+                            document.querySelector<HTMLElement>(hash);
+                        target?.scrollIntoView({
+                            behavior: reduceMotion ? "auto" : "smooth",
+                        });
+                        target?.focus({ preventScroll: true });
+                    } else {
+                        dialog.close();
+                    }
+                });
+            });
+    </script>
 </section>

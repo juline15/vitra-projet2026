@@ -1,6 +1,7 @@
 ---
 import Media from "./Media.astro";
 import { designer } from "../data/event";
+import Cta from "./Cta.astro";
 ---
 
 <section id="designer" class="scroll-mt-24 bg-plaster">
@@ -37,6 +38,16 @@ import { designer } from "../data/event";
                         {designer.quote}
                     </p>
                 </blockquote>
+                <Cta
+                    href={designer.link}
+                    external
+                    variant="secondary"
+                    class="mt-6 self-start"
+                >
+                    En savoir plus<span class="sr-only">
+                        sur {designer.name}</span
+                    >
+                </Cta>
             </div>
         </div>
     </div>

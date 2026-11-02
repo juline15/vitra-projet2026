@@ -1,0 +1,45 @@
+---
+interface Props {
+    href?: string;
+    variant?: "primary" | "secondary";
+    external?: boolean;
+    class?: string;
+    [key: string]: unknown;
+    type?: "button" | "submit";
+}
+const {
+    href,
+    variant = "primary",
+    external = false,
+    type = "button",
+    class: cls = "",
+    ...rest
+} = Astro.props;
+
+const base =
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold transition-colors";
+const styles = {
+    primary: "bg-ink text-paper hover:bg-stone",
+    secondary: "border border-ink text-ink hover:bg-ink hover:text-paper",
+};
+---
+
+{
+    href ? (
+        <a
+            href={href}
+            class:list={[base, styles[variant], cls]}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
+            {...rest}
+        >
+            <slot />
+            {external && <span class="sr-only"> (nouvelle fenêtre)</span>}
+            <span aria-hidden="true">→</span>
+        </a>
+    ) : (
+        <button type={type} class:list={[base, styles[variant], cls]} {...rest}>
+            <slot />
+        </button>
+    )
+}
