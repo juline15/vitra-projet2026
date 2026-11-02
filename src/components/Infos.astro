@@ -15,30 +15,36 @@ const { location } = event;
             class="mt-10 grid gap-8 border-t border-paper/30 pt-6 sm:grid-cols-2 md:mt-16 md:gap-10 md:pt-8 lg:grid-cols-4"
         >
             <div>
-                <dt class="text-sm text-paper/60">Date</dt>
-                <dd class="mt-1 text-base md:mt-2 md:text-lg">{event.date}</dd>
+                <dt class="text-sm text-paper/60"><p>Date</p></dt>
+                <dd class="mt-1 text-base md:mt-2 md:text-lg">
+                    <p>{event.date}</p>
+                </dd>
             </div>
             <div>
-                <dt class="text-sm text-paper/60">Adresse</dt>
+                <dt class="text-sm text-paper/60"><p>Adresse</p></dt>
                 <dd class="mt-1 text-base md:mt-2 md:text-lg">
                     <address class="not-italic">
-                        {location.name}<br />{location.address}<br />{
-                            location.city
-                        }<br />{location.country}
+                        <p>
+                            {location.name}<br />{location.address}<br />{
+                                location.city
+                            }<br />{location.country}
+                        </p>
                     </address>
                 </dd>
             </div>
             <div>
-                <dt class="text-sm text-paper/60">Accès</dt>
+                <dt class="text-sm text-paper/60"><p>Accès</p></dt>
                 <dd class="mt-1 text-base md:mt-2 md:text-lg">
-                    Avant-première sur invitation.<br />Ouverture au public
-                    différée.
+                    <p>
+                        Avant-première sur invitation.<br />Ouverture au public
+                        différée.
+                    </p>
                 </dd>
             </div>
             <div>
-                <dt class="text-sm text-paper/60">Contact</dt>
+                <dt class="text-sm text-paper/60"><p>Contact</p></dt>
                 <dd class="mt-1 text-base md:mt-2 md:text-lg">
-                    {location.phone}
+                    <p>{location.phone}</p>
                 </dd>
             </div>
         </dl>
