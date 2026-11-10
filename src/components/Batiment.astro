@@ -30,7 +30,7 @@ import { batiment } from "../data/event";
             {
                 [batiment.dessin, batiment.mockup].map((img) => (
                     <li>
-                        <figure>
+                        <figure role="figure" aria-label={img.caption}>
                             <div class="aspect-[4/3] bg-plaster">
                                 <img
                                     src={img.src}

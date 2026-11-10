@@ -1,6 +1,3 @@
-// Laisse src: '' tant que le média n'existe pas : un cadre en pointillés s'affiche.
-// Mets tes fichiers dans /public, ex. public/visuels/affiche-1.jpg → '/visuels/affiche-1.jpg'
-
 export const event = {
     heading: 'Le design prend une nouvelle forme',
     title: 'Vitra x Maxime Bellaunay',
@@ -96,8 +93,8 @@ export const designer = {
 
 export const visuels = {
     affiches: [
-        { src: '/affiche_batiment4.png', alt: 'Affiche évènement', caption: 'Affiche évènement' },
-        { src: '/affiche_batiment2.png', alt: 'Affiche évènement', caption: 'Affiche évènement' },
+        { src: '/affiche_batiment4.png', alt: 'Affiche Vitra x Maxime Bellaunay : « Le design prend une nouvelle forme ». Le 20 sept. 2028, de 17 h à 21 h. Dessin du nouveau bâtiment.', caption: 'Affiche évènement' },
+        { src: '/affiche_batiment2.png', alt: 'Affiche Vitra x Maxime Bellaunay : « Découvrez la nouvelle exposition et son pop-up exclusif en édition limitée ». Dessin du nouveau bâtiment.', caption: 'Affiche avant-première' },
     ],
 };
 
